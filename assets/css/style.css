@@ -1,0 +1,22 @@
+
+div,
+form,
+input {
+  margin: 5px;
+}
+
+button, #add-person {
+  background-color: rgb(106, 158, 82);
+  border: rgb(79, 165, 39);
+  border-width: 2px;
+  color: white;
+  padding: 10px 16px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  margin: 1px;
+}
+
+#add-person {
+  font-size: 18px;
+}

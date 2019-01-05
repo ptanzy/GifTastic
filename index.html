@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <title>Gifistory</title>
+  <link rel="stylesheet" type="text/css" href="assets/css/style.css">
+</head>
+
+<body>
+
+  <div class="container">
+    <!-- Buttons located here -->
+    <div id="buttons-view"></div>
+
+    <form id="person-form">
+      <label for="person-input">Historical People</label>
+      <input type="text" id="person-input"><br>
+
+      <!-- Button triggers new person to be added -->
+      <input id="add-person" type="submit" value="Add a Dude/Dudette!">
+    </form>
+    <div id="images">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script type="text/javascript">
+      // Initial array of persons
+      var persons = ["William The Conqueror", "Julius Ceasar", "Boudicca", "Constantine The Great", "George Washington", "Leonidas", "Obama",
+                    "Alexander The Great", "Chairman Mao", "Suleiman The Magnificent", "Abraham Lincoln", "Charlemagne", "Charles Martel", "Trump",
+                    "Niccolò Machiavelli", "Sun Tzu", "Joseph Stalin", "Saladin", "Haile Selassie", "Septimius Severus", "Alexios Komnenos", "Bush"];
+
+      // Function for putting the JSON for each button into the div
+      function displayPersonInfo() {
+
+        var person = $(this).attr("data-name");
+        var queryURL = "https://api.giphy.com/v1/gifs/search?q=" + person + "&api_key=dc6zaTOxFJmzC&limit=10";
+
+
+
+        // AJAX call
+        $.ajax({
+          url: queryURL,
+          method: "GET"
+        }).then(function(response) {
+          //image url from response
+          var images = response.data;
+          for(var i = 0; i < images.length; i++){
+            var imageUrl = images[i].images.original_still.url;
+            var gifUrl = images[i].images.original.url;
+            var rating = images[i].rating;
+            //create image element
+            var personImg = $("<img>");
+
+            //add image url a src and add alt 
+            personImg.attr("src", imageUrl);
+            personImg.attr("alt", "cat image");
+            personImg.attr("prsn-still", imageUrl);
+            personImg.attr("prsn-animate", gifUrl);
+            personImg.attr("prsn-state", "still");
+            personImg.attr("class", "gif")
+            var rating = $("<div>").append(rating);
+            var div = $("<div>")
+              .append(rating)
+              .append(personImg);
+            //add image to images div
+            $("#images").prepend(div);
+            personImg.on("click", function() {
+              //the image's data-state 
+                var state = $(this).attr("prsn-state");
+
+              // If state is 'animate'update the src of this
+              // image else it's data-still value and update the data-state to 'still'
+              if(state === "still"){
+                var animate = $(this).attr("prsn-animate");
+                $(this).attr("src", animate);
+                $(this).attr("prsn-state", "animate");
+                event.preventDefault();
+              } else {
+                var still = $(this).attr("prsn-still");
+                $(this).attr("src", still);
+                $(this).attr("prsn-state", "still");
+                event.preventDefault();
+              }
+            });
+          }
+        });
+      }
+
+      // Function for displaying person data
+      function renderButtons() {
+
+        // Delete buttons prior to adding new persons
+        $("#buttons-view").empty();
+
+        // Looping through the array of persons
+        for (var i = 0; i < persons.length; i++) {
+
+          //generate buttons for each person in the array
+          var a = $("<button>");
+          //Adding a class of person
+          a.addClass("person");
+          //Adding a data-attr
+          a.attr("data-name", persons[i]);
+          //Providing initial button text
+          a.text(persons[i]);
+          //Adding the button to the buttons-view div
+          $("#buttons-view").append(a);
+        }
+      }
+
+      // This function handles events when one button is clicked
+      $("#add-person").on("click", function(event) {
+        event.preventDefault();
+
+        // This line grabs the input from the textbox
+        var person = $("#person-input").val().trim();
+        if(person === ""){
+          return;
+        }
+        // The person from the textbox is then added to our array
+        persons.push(person);
+
+        // Calling renderButtons handles the person array processing
+        renderButtons();
+
+      });
+
+      // Generic function for displaying the personInfo
+      $(document).on("click", ".person", displayPersonInfo);
+
+      // Calling the renderButtons function to display the intial buttons
+      renderButtons();
+    </script>
+  </div>
+</body>
+
+</html>
